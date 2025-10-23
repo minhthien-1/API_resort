@@ -8,6 +8,13 @@ const router = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Users
+ *   description: Quản lý users
+ */
+
+/**
+ * @swagger
  * /api/users:
  *   get:
  *     summary: Lấy tất cả users
