@@ -11,6 +11,8 @@ const resortsRouter = require('./routes/resorts');
 const bookingsRouter = require('./routes/bookings');
 const discountsRouter = require('./routes/discounts');
 const revenueRouter = require('./routes/revenue');
+const usersRouter = require('./routes/users');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -47,10 +49,25 @@ const swaggerDefinition = {
           created_at: { type: 'string', format: 'date-time' },
           updated_at: { type: 'string', format: 'date-time' }
         }
+      },
+      User: {
+        type: 'object',
+        required: ['username', 'email', 'password', 'full_name'],
+        properties: {
+          id: { type: 'integer' },
+          username: { type: 'string' },
+          email: { type: 'string', format: 'email' },
+          password: { type: 'string' },
+          full_name: { type: 'string' },
+          phone: { type: 'string' },
+          role: { type: 'string', enum: ['admin', 'manager', 'staff'], default: 'staff' },
+          is_active: { type: 'boolean', default: true },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
       }
     }
   }
-
 };
 
 const options = {
@@ -66,6 +83,8 @@ app.use('/api/resorts', resortsRouter);
 app.use('/api/bookings', bookingsRouter);
 app.use('/api/discounts', discountsRouter);
 app.use('/api/revenue', revenueRouter);
+app.use('/api/users', usersRouter);
+
 // Root route
 app.get('/', (req, res) => {
   res.send('Resort Management API đang chạy');
