@@ -1,4 +1,3 @@
-// routes/reviews.js
 const express = require('express');
 const router = express.Router();
 const reviewsController = require('../controllers/reviewsController');
@@ -52,6 +51,37 @@ router.get('/:room_id', reviewsController.getReviewsByRoomId);
  *       201:
  *         description: Đã thêm đánh giá mới
  */
-router.post('/', reviewsController.createReview);
+router.post('/', reviewsController.addReview);
+
+/**
+ * @swagger
+ * /api/reviews/reply/{review_id}:
+ *   post:
+ *     summary: Gửi phản hồi cho một đánh giá
+ *     tags: [Reviews]
+ *     parameters:
+ *       - in: path
+ *         name: review_id
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: ID của đánh giá
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               reply_content:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Phản hồi thành công
+ */
+router.post('/reply/:review_id', reviewsController.replyToReview);
 
 module.exports = router;

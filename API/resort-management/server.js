@@ -96,7 +96,7 @@ app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Mount routes
 app.use('/api/resorts', resortsRouter);
-app.use('/api/reviews', reviewsRouter); // 👈 Thêm dòng này
+app.use('/api/reviews', reviewsRouter); 
 
 app.use('/api/bookings', bookingsRouter);
 app.use('/api/discounts', discountsRouter);

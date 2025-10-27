@@ -1,38 +1,40 @@
-// controllers/reviewsController.js
-const pool = require('../db');
+const Review = require('../models/Reviews');
 
-// 🟢 Lấy tất cả review theo room_id
 exports.getReviewsByRoomId = async (req, res) => {
   const { room_id } = req.params;
   try {
-    const result = await pool.query(
-      'SELECT id, username, rating, comment, created_at FROM reviews WHERE room_id = $1 ORDER BY created_at DESC',
-      [room_id]
-    );
-    res.json(result.rows);
+    const reviews = await Review.getReviewsByRoom(room_id);
+
+    for (let review of reviews) {
+      review.replies = await Review.getRepliesByReview(review.review_id);
+    }
+
+    res.json(reviews);
   } catch (err) {
-    console.error('❌ Lỗi khi lấy danh sách review:', err);
+    console.error('❌ Lỗi khi tải đánh giá:', err);
     res.status(500).json({ error: 'Lỗi khi tải đánh giá' });
   }
 };
 
-// 🟡 Tạo review mới
-exports.createReview = async (req, res) => {
-  const { username, rating, comment, room_id } = req.body;
-  if (!room_id || !rating || !comment) {
-    return res.status(400).json({ error: 'Thiếu dữ liệu bắt buộc' });
-  }
-
+exports.addReview = async (req, res) => {
+  const { room_id, username, rating, comment } = req.body;
   try {
-    const result = await pool.query(
-      `INSERT INTO reviews (room_id, username, rating, comment, created_at)
-       VALUES ($1, $2, $3, $4, NOW())
-       RETURNING *`,
-      [room_id, username || 'Khách ẩn danh', rating, comment]
-    );
-    res.status(201).json(result.rows[0]);
+    const newReview = await Review.addReview({ room_id, username, rating, comment });
+    res.status(201).json(newReview);
   } catch (err) {
-    console.error('❌ Lỗi khi thêm review:', err);
-    res.status(500).json({ error: 'Lỗi khi gửi đánh giá' });
+    console.error('❌ Lỗi khi thêm đánh giá:', err);
+    res.status(500).json({ error: 'Không thể thêm đánh giá' });
+  }
+};
+
+exports.replyToReview = async (req, res) => {
+  const { review_id } = req.params;
+  const { username, reply_content } = req.body;
+  try {
+    const reply = await Review.addReply({ review_id, username, reply_content });
+    res.status(201).json({ message: 'Phản hồi thành công', reply });
+  } catch (err) {
+    console.error('❌ Lỗi khi phản hồi:', err);
+    res.status(500).json({ error: 'Không thể phản hồi' });
   }
 };
