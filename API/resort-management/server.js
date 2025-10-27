@@ -8,6 +8,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 
 const pool = require('./db');
 const resortsRouter = require('./routes/resorts');
+const reviewsRouter = require('./routes/reviews');
 
 const app = express();
 app.use(cors());
@@ -45,6 +46,20 @@ const swaggerDefinition = {
         created_at: { type: 'string', format: 'date-time' },
         updated_at: { type: 'string', format: 'date-time' }
       }
+    },
+      Review: {
+      type: 'object',
+      required: ['room_id', 'rating', 'comment'],
+      properties: {
+        review_id: { type: 'integer' },
+        room_id: { type: 'string', format: 'uuid' },
+        user_id: { type: 'string', format: 'uuid' },
+        username: { type: 'string' },
+        rating: { type: 'integer', minimum: 1, maximum: 5 },
+        comment: { type: 'string' },
+        created_at: { type: 'string', format: 'date-time' },
+        updated_at: { type: 'string', format: 'date-time' }
+      }
     }
   }
 }
@@ -61,6 +76,7 @@ app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Mount routes
 app.use('/api/resorts', resortsRouter);
+app.use('/api/reviews', reviewsRouter); // 👈 Thêm dòng này
 
 // Root route
 app.get('/', (req, res) => {
