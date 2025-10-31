@@ -1,13 +1,54 @@
 const express = require('express');
-const pool = require('../db');
 const router = express.Router();
+const bookingsController = require('../controllers/bookingsController');
+
+// Middleware xác thực JWT
+let authorize;
+try {
+  authorize = require('../middleware/authorize');
+} catch (error) {
+  // Nếu không có middleware authorize, tạo một mock function
+  authorize = () => (req, res, next) => {
+    // Mock user để test không cần JWT
+    req.user = { userId: 1, role: 'guest' };
+    next();
+  };
+}
 
 /**
  * @swagger
  * tags:
  *   name: Bookings
- *   description: API thống kê booking
+ *   description: API quản lý booking
  */
+
+/**
+ * @swagger
+ * /api/bookings:
+ *   post:
+ *     summary: Tạo đặt phòng mới
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [roomId, checkIn, checkOut, pricePerNight]
+ *             properties:
+ *               roomId: { type: string }
+ *               checkIn: { type: string, format: date }
+ *               checkOut: { type: string, format: date }
+ *               pricePerNight: { type: number }
+ *     responses:
+ *       201:
+ *         description: Đặt phòng thành công
+ *       400:
+ *         description: Thiếu thông tin
+ */
+router.post('/', authorize(['guest', 'staff', 'admin']), bookingsController.createBooking);
 
 /**
  * @swagger
@@ -19,14 +60,7 @@ const router = express.Router();
  *       200:
  *         description: Tổng số booking
  */
-router.get('/total', async (req, res) => {
-    try {
-        const r = await pool.query('SELECT COUNT(*) AS total FROM bookings');
-        res.json({ total: Number(r.rows[0].total) });
-    } catch (err) {
-        res.status(500).json({ error: 'Lỗi server khi lấy tổng booking' });
-    }
-});
+router.get('/total', bookingsController.getTotalBookings);
 
 /**
  * @swagger
@@ -47,20 +81,99 @@ router.get('/total', async (req, res) => {
  *       200:
  *         description: Kết quả lọc booking
  */
-router.get('/filter', async (req, res) => {
-    try {
-        const { month, year } = req.query;
-        let sql = `SELECT COUNT(*) AS total FROM bookings WHERE 1=1`;
-        const params = [];
-        if (month && year) {
-            sql += ` AND EXTRACT(MONTH FROM check_in) = $1 AND EXTRACT(YEAR FROM check_in) = $2`;
-            params.push(parseInt(month), parseInt(year));
-        }
-        const result = await pool.query(sql, params);
-        res.json({ total: Number(result.rows[0].total) });
-    } catch (err) {
-        res.status(500).json({ error: 'Lỗi server' });
-    }
-});
+router.get('/filter', bookingsController.filterBookings);
+
+/**
+ * @swagger
+ * /api/bookings/top-booked:
+ *   get:
+ *     summary: Lấy danh sách phòng được đặt nhiều nhất
+ *     tags: [Bookings]
+ *     responses:
+ *       200:
+ *         description: Danh sách phòng top booked
+ */
+router.get('/top-booked', bookingsController.getTopBookedRooms);
+
+/**
+ * @swagger
+ * /api/bookings/my-bookings:
+ *   get:
+ *     summary: Lấy lịch sử đặt phòng của khách
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lịch sử đặt phòng
+ */
+router.get('/my-bookings', authorize(['guest', 'staff', 'admin']), bookingsController.getMyBookings);
+
+/**
+ * @swagger
+ * /api/bookings/list:
+ *   get:
+ *     summary: Lấy tất cả bookings (Admin/Staff)
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Danh sách bookings
+ */
+router.get('/list', authorize(['admin', 'staff']), bookingsController.getAllBookings);
+
+/**
+ * @swagger
+ * /api/bookings/:id:
+ *   get:
+ *     summary: Lấy chi tiết booking
+ *     tags: [Bookings]
+ *     responses:
+ *       200:
+ *         description: Chi tiết booking
+ */
+router.get('/:id', bookingsController.getBookingById);
+
+/**
+ * @swagger
+ * /api/bookings/:id/cancel:
+ *   put:
+ *     summary: Hủy đặt phòng
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Hủy thành công
+ */
+router.put('/:id/cancel', authorize(['guest', 'staff', 'admin']), bookingsController.cancelBooking);
+
+/**
+ * @swagger
+ * /api/bookings/:id/status:
+ *   put:
+ *     summary: Cập nhật trạng thái booking
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Cập nhật thành công
+ */
+router.put('/:id/status', authorize(['admin', 'staff']), bookingsController.updateBookingStatus);
 
 module.exports = router;

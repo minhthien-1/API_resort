@@ -13,6 +13,7 @@ const bookingsRouter = require('./routes/bookings');
 const discountsRouter = require('./routes/discounts');
 const revenueRouter = require('./routes/revenue');
 const usersRouter = require('./routes/users');
+const paymentsRouter = require('./routes/payments');
 
 
 const app = express();
@@ -102,6 +103,7 @@ app.use('/api/bookings', bookingsRouter);
 app.use('/api/discounts', discountsRouter);
 app.use('/api/revenue', revenueRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/payments', paymentsRouter);
 
 // Root route
 app.get('/', (req, res) => {
