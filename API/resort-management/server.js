@@ -14,6 +14,8 @@ const discountsRouter = require('./routes/discounts');
 const revenueRouter = require('./routes/revenue');
 const usersRouter = require('./routes/users');
 const paymentsRouter = require('./routes/payments');
+const notificationsRouter = require('./routes/notifications');
+const contactsRouter = require('./routes/contacts');
 
 
 const app = express();
@@ -104,6 +106,8 @@ app.use('/api/discounts', discountsRouter);
 app.use('/api/revenue', revenueRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/payments', paymentsRouter);
+app.use('/api/notifications', notificationsRouter);
+app.use('/api/contacts', contactsRouter);
 
 // Root route
 app.get('/', (req, res) => {
