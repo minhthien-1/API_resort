@@ -1,5 +1,3 @@
-// server.js
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -8,6 +6,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 
 const pool = require('./db');
 const resortsRouter = require('./routes/resorts');
+const roomsRouter = require('./routes/rooms');
 const reviewsRouter = require('./routes/reviews');
 const bookingsRouter = require('./routes/bookings');
 const discountsRouter = require('./routes/discounts');
@@ -16,7 +15,6 @@ const usersRouter = require('./routes/users');
 const paymentsRouter = require('./routes/payments');
 const notificationsRouter = require('./routes/notifications');
 const contactsRouter = require('./routes/contacts');
-
 
 const app = express();
 app.use(cors());
@@ -37,22 +35,31 @@ const swaggerDefinition = {
     schemas: {
       Resort: {
         type: 'object',
-        required: ['resort_name', 'room_type_id', 'type', 'status', 'category', 'location', 'address'],
+        required: ['name'],
+        properties: {
+          id: { type: 'integer', description: 'ID Resort' },
+          name: { type: 'string', description: 'Tên resort' },
+          created_at: { type: 'string', format: 'date-time' }
+        }
+      },
+      Room: {
+        type: 'object',
+        required: ['resort_id', 'room_type_id', 'location'],
         properties: {
           id: { type: 'string', format: 'uuid' },
-          resort_name: { type: 'string' },
-          room_type_id: { type: 'string', format: 'uuid', description: 'ID loại phòng' },
-          type: { type: 'string', description: 'Tên loại phòng' },
+          resort_id: { type: 'integer' },
+          room_type_id: { type: 'string', format: 'uuid' },
+          location: { type: 'string' },
+          address: { type: 'string' },
           status: {
             type: 'string',
-            enum: ['available', 'reserved', 'occupied', 'maintenance'],
+            enum: ['available', 'maintenance'],
             description: 'Trạng thái phòng'
           },
           category: { type: 'string' },
-          location: { type: 'string' },
-          address: { type: 'string' },
-          created_at: { type: 'string', format: 'date-time' },
-          updated_at: { type: 'string', format: 'date-time' }
+          num_bed: { type: 'string' },
+          price_per_night: { type: 'number' },
+          created_at: { type: 'string', format: 'date-time' }
         }
       },
       User: {
@@ -70,20 +77,20 @@ const swaggerDefinition = {
           created_at: { type: 'string', format: 'date-time' },
           updated_at: { type: 'string', format: 'date-time' }
         }
-      }
-    },
+      },
       Review: {
-      type: 'object',
-      required: ['room_id', 'rating', 'comment'],
-      properties: {
-        review_id: { type: 'integer' },
-        room_id: { type: 'string', format: 'uuid' },
-        user_id: { type: 'string', format: 'uuid' },
-        username: { type: 'string' },
-        rating: { type: 'integer', minimum: 1, maximum: 5 },
-        comment: { type: 'string' },
-        created_at: { type: 'string', format: 'date-time' },
-        updated_at: { type: 'string', format: 'date-time' }
+        type: 'object',
+        required: ['room_id', 'rating', 'comment'],
+        properties: {
+          review_id: { type: 'integer' },
+          room_id: { type: 'string', format: 'uuid' },
+          user_id: { type: 'string', format: 'uuid' },
+          username: { type: 'string' },
+          rating: { type: 'integer', minimum: 1, maximum: 5 },
+          comment: { type: 'string' },
+          created_at: { type: 'string', format: 'date-time' },
+          updated_at: { type: 'string', format: 'date-time' }
+        }
       }
     }
   }
@@ -97,10 +104,10 @@ const options = {
 const swaggerSpec = swaggerJSDoc(options);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Mount routes
+// ===== MOUNT ROUTES =====
 app.use('/api/resorts', resortsRouter);
-app.use('/api/reviews', reviewsRouter); 
-
+app.use('/api/rooms', roomsRouter);
+app.use('/api/reviews', reviewsRouter);
 app.use('/api/bookings', bookingsRouter);
 app.use('/api/discounts', discountsRouter);
 app.use('/api/revenue', revenueRouter);
