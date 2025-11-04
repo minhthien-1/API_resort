@@ -13,9 +13,10 @@ exports.getAllRooms = async (req, res) => {
         rt.name AS room_type, 
         rt.price_per_night as default_price,
         COALESCE(rd.price_per_night, rt.price_per_night) AS actual_price,
+        COALESCE(rd.price_per_night, rt.price_per_night) AS price_per_night,
         rd.description, 
         rd.features, 
-        rd.images_url, 
+        rd.images_url as images,
         r.status, 
         r.category, 
         r.location, 
@@ -44,7 +45,7 @@ exports.getAllRooms = async (req, res) => {
       sql += ` AND rt.name = $${params.length}`;
     }
 
-    sql += ` ORDER BY r.created_at DESC`;
+    sql += ` ORDER BY res.name ASC, r.created_at DESC`;
     const result = await db.query(sql, params);
     res.json(result.rows);
   } catch (error) {
