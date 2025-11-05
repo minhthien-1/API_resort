@@ -215,3 +215,27 @@ router.post('/:id/refund', authorize(['admin', 'staff']), paymentController.refu
 
 module.exports = router;
 
+//Thêm thông báo
+router.post("/pay", async (req, res) => {
+  return res.status(200).json({
+    message: "Thanh toán thành công!"
+  });
+});
+// Client-side function to call the payment API
+async function pay(info) {
+  const res = await fetch("/payment/pay", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(info),
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    Swal.fire({ icon: "success", text: data.message });
+  } else {
+    Swal.fire({ icon: "error", text: data.message });
+  }
+}
+
+

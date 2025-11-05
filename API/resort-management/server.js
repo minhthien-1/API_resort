@@ -1,4 +1,7 @@
+
 // server.js
+require('dotenv').config();
+console.log(">> DB_NAME thực tế:", process.env.DB_NAME);
 
 require('dotenv').config();
 const express = require('express');

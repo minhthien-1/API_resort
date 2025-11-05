@@ -177,3 +177,13 @@ router.put('/:id/cancel', authorize(['guest', 'staff', 'admin']), bookingsContro
 router.put('/:id/status', authorize(['admin', 'staff']), bookingsController.updateBookingStatus);
 
 module.exports = router;
+
+//Thêm thông báo
+router.post("/book", async (req, res) => {
+  try {
+    const booking = await createBooking(req.body);
+    return res.status(200).json({ message: "Đặt phòng thành công!", data: booking });
+  } catch (e) {
+    return res.status(500).json({ message: "Đặt phòng thất bại" });
+  }
+});
