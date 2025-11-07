@@ -1,0 +1,29 @@
+{
+    "sqltools.connections": [
+        {
+            "name": "MySQL Local",
+            "driver": "MySQL",
+            "server": "localhost",
+            "port": 3306,
+            "database": "qlnhtieccuoi",
+            "username": "root",
+            "password": "123456aA@$"
+        },
+        {
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": true
+                }
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "ep-winter-darkness-a1ilhq1i-pooler.ap-southeast-1.aws.neon.tech",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "ResortWeb",
+            "database": "neondb",
+            "username": "neondb_owner",
+            "password": "npg_SaXocHKw0A5p"
+        }
+    ]
+}

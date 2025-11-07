@@ -1,4 +1,3 @@
-// routes/resorts.js
 const express = require('express');
 const router = express.Router();
 const resortsController = require('../controllers/resortController');
@@ -38,8 +37,7 @@ router.get('/', resortsController.getAllResorts);
  *       - in: path
  *         name: id
  *         schema:
- *           type: string
- *           format: uuid
+ *           type: integer
  *         required: true
  *         description: ID của resort
  *     responses:
@@ -65,7 +63,13 @@ router.get('/:id', resortsController.getResortById);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Resort'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Tên resort
+ *             required:
+ *               - name
  *     responses:
  *       201:
  *         description: Đã tạo resort
@@ -86,8 +90,7 @@ router.post('/', resortsController.createResort);
  *       - in: path
  *         name: id
  *         schema:
- *           type: string
- *           format: uuid
+ *           type: integer
  *         required: true
  *         description: ID của resort
  *     requestBody:
@@ -95,7 +98,13 @@ router.post('/', resortsController.createResort);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Resort'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Tên resort
+ *             required:
+ *               - name
  *     responses:
  *       200:
  *         description: Đã cập nhật resort
@@ -118,13 +127,14 @@ router.put('/:id', resortsController.updateResort);
  *       - in: path
  *         name: id
  *         schema:
- *           type: string
- *           format: uuid
+ *           type: integer
  *         required: true
  *         description: ID của resort
  *     responses:
  *       200:
  *         description: Đã xóa resort
+ *       404:
+ *         description: Không tìm thấy
  */
 router.delete('/:id', resortsController.deleteResort);
 
