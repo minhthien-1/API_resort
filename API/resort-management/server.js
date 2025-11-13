@@ -21,6 +21,7 @@ const contactsRouter = require('./routes/contacts');
 // Admin routes
 adminRouter.use('/resorts', resortsRouter);
 adminRouter.use('/room-types', roomsRouter);
+adminRouter.use('/rooms', roomsRouter);
 
 
 const app = express();
