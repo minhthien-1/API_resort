@@ -14,8 +14,8 @@ router.post('/login', async (req, res) => {
     }
 
     const result = await pool.query(
-    'SELECT id, username, password_hash, role, email FROM users WHERE username = $1 OR email = $1',
-    [username]  // Dùng parameter duy nhất, nhưng check cả username & email
+      'SELECT id, username, password_hash, role, email, full_name FROM users WHERE username = $1 OR email = $1',
+      [username]
     );
 
     if (result.rows.length === 0) {
@@ -37,7 +37,13 @@ router.post('/login', async (req, res) => {
       status: true,
       message: 'Login successful',
       token: token,
-      user: { id: user.id, username: user.username, role: user.role, full_name: user.full_name  }
+      user: { 
+        id: user.id, 
+        username: user.username, 
+        role: user.role, 
+        full_name: user.full_name,
+        email: user.email
+      }
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -63,7 +69,7 @@ router.post('/register', async (req, res) => {
     }
 
     const result = await pool.query(
-      'INSERT INTO users (username, email, password_hash, full_name, phone, role, is_active) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, username, email, role',
+      'INSERT INTO users (username, email, password_hash, full_name, phone, role, is_active) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, username, email, role, full_name',
       [username, email, password, full_name || '', phone || '', 'guest', true]
     );
 
@@ -78,7 +84,13 @@ router.post('/register', async (req, res) => {
       status: true,
       message: 'Register successful',
       token: token,
-      user: { id: newUser.id, username: newUser.username, email: newUser.email, role: newUser.role,  }
+      user: { 
+        id: newUser.id, 
+        username: newUser.username, 
+        email: newUser.email, 
+        role: newUser.role,
+        full_name: newUser.full_name
+      }
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
