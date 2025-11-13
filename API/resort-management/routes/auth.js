@@ -1,6 +1,6 @@
-import express from 'express';
-import jwt from 'jsonwebtoken';
-import pool from '../db.js';
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const pool = require('../db');
 
 const router = express.Router();
 
@@ -85,4 +85,4 @@ router.post('/register', async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
