@@ -91,24 +91,16 @@ router.get('/:id', async (req, res) => {
 
     if (result.rows.length === 0) {
       return res.status(404).json({
-        status: false,
-        code: 404,
-        message: 'User not found'
+        error: 'User not found'
       });
     }
 
-    res.status(200).json({
-      status: true,
-      code: 200,
-      message: 'User retrieved successfully',
-      data: result.rows[0]
-    });
+    // ✅ Direct response, không có wrapper
+    res.status(200).json(result.rows[0]);
   } catch (error) {
     console.error('Error fetching user:', error);
     res.status(500).json({
-      status: false,
-      code: 500,
-      message: error.message
+      error: error.message
     });
   }
 });
