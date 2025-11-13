@@ -37,7 +37,7 @@ router.post('/login', async (req, res) => {
       status: true,
       message: 'Login successful',
       token: token,
-      user: { id: user.id, username: user.username, role: user.role }
+      user: { id: user.id, username: user.username, role: user.role, full_name: user.full_name  }
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -78,7 +78,7 @@ router.post('/register', async (req, res) => {
       status: true,
       message: 'Register successful',
       token: token,
-      user: { id: newUser.id, username: newUser.username, email: newUser.email, role: newUser.role }
+      user: { id: newUser.id, username: newUser.username, email: newUser.email, role: newUser.role,  }
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
