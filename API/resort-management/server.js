@@ -7,6 +7,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const apiRouter = express.Router();
 const adminRouter = express.Router();
 
+
 const pool = require('./db');
 const resortsRouter = require('./routes/resorts');
 const roomsRouter = require('./routes/rooms');
@@ -15,6 +16,7 @@ const bookingsRouter = require('./routes/bookings');
 const discountsRouter = require('./routes/discounts');
 const revenueRouter = require('./routes/revenue');
 const usersRouter = require('./routes/users');
+const authRouter = require('./routes/auth');
 const paymentsRouter = require('./routes/payments');
 const notificationsRoute = require('./routes/notifications.js');
 const contactsRouter = require('./routes/contacts');
@@ -31,6 +33,7 @@ app.use(express.json());
 app.use('/api', apiRouter);
 app.use('/api/admin', adminRouter);
 app.use('/notifications', notificationsRoute);
+app.use('/api/auth', authRouter);
 
 // Swagger configuration
 const swaggerDefinition = {
