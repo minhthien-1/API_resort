@@ -11,9 +11,7 @@ exports.getAllRooms = async (req, res) => {
         res.name as resort_name,
         r.room_type_id,
         rt.name AS room_type, 
-        rt.price_per_night as default_price,
-        COALESCE(rd.price_per_night, rt.price_per_night) AS actual_price,
-        COALESCE(rd.price_per_night, rt.price_per_night) AS price_per_night,
+        COALESCE(rd.price_per_night, 0) AS price_per_night,
         rd.description, 
         rd.features, 
         rd.images_url as images,
@@ -65,8 +63,7 @@ exports.getRoomById = async (req, res) => {
         res.name as resort_name,
         r.room_type_id,
         rt.name AS room_type, 
-        rt.price_per_night as default_price,
-        COALESCE(rd.price_per_night, rt.price_per_night) AS actual_price,
+        COALESCE(rd.price_per_night, 0) AS price_per_night,
         rd.description, 
         rd.features, 
         rd.images_url, 
@@ -119,7 +116,7 @@ exports.createRoom = async (req, res) => {
     await client.query(
       `INSERT INTO room_details (room_id, description, features, images_url, num_bed, price_per_night, created_at, updated_at)
        VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`,
-      [roomId, description || '', [], [], num_bed || '', parseFloat(price_per_night) || 0]
+      [roomId, description || '', '[]', '[]', num_bed || 1, parseFloat(price_per_night) || 0]
     );
 
     await client.query('COMMIT');
@@ -174,13 +171,13 @@ exports.updateRoom = async (req, res) => {
           price_per_night = $3,
           updated_at = NOW()
          WHERE room_id = $4`,
-        [description || '', num_bed || '', parseFloat(price_per_night) || 0, id]
+        [description || '', num_bed || 1, parseFloat(price_per_night) || 0, id]
       );
     } else {
       await client.query(
         `INSERT INTO room_details (room_id, description, features, images_url, num_bed, price_per_night, created_at, updated_at)
          VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`,
-        [id, description || '', [], [], num_bed || '', parseFloat(price_per_night) || 0]
+        [id, description || '', '[]', '[]', num_bed || 1, parseFloat(price_per_night) || 0]
       );
     }
 
