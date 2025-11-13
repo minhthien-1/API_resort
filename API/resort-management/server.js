@@ -20,6 +20,7 @@ const authRouter = require('./routes/auth');
 const paymentsRouter = require('./routes/payments');
 const notificationsRoute = require('./routes/notifications.js');
 const contactsRouter = require('./routes/contacts');
+const fakePaymentsRouter = require('./routes/fakepayments');
 // Admin routes
 adminRouter.use('/resorts', resortsRouter);
 adminRouter.use('/room-types', roomsRouter);
@@ -34,6 +35,7 @@ app.use('/api', apiRouter);
 app.use('/api/admin', adminRouter);
 app.use('/notifications', notificationsRoute);
 app.use('/api/auth', authRouter);
+app.use('/api/payments', fakePaymentsRouter);
 
 // Swagger configuration
 const swaggerDefinition = {
