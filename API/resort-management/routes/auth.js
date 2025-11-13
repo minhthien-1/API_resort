@@ -14,8 +14,8 @@ router.post('/login', async (req, res) => {
     }
 
     const result = await pool.query(
-      'SELECT id, username, password_hash, role FROM users WHERE username = $1',
-      [username]
+    'SELECT id, username, password_hash, role, email FROM users WHERE username = $1 OR email = $1',
+    [username]  // Dùng parameter duy nhất, nhưng check cả username & email
     );
 
     if (result.rows.length === 0) {
