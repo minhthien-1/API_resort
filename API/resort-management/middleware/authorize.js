@@ -1,36 +1,20 @@
-// middleware/authorize.js
-const jwt = require('jsonwebtoken');
-
 /**
- * Middleware xác thực JWT và kiểm tra quyền
- * @param {Array} allowedRoles - Danh sách role được phép truy cập
+ * Middleware GIẢ LẬP xác thực (Dùng để Test, không cần Token)
  */
 function authorize(allowedRoles = []) {
   return (req, res, next) => {
-    const authHeader = req.headers.authorization || '';
-    const token = authHeader.split(' ')[1]; // Lấy token sau "Bearer "
+    console.log(`🔓 [TEST MODE] Bỏ qua xác thực...`);
 
-    if (!token) {
-      return res.status(401).json({ error: 'Unauthorized: Token không tồn tại' });
-    }
-
-    try {
-      const payload = jwt.verify(token, process.env.JWT_SECRET || 'defaultsecret');
+    req.user = {
+      // ✅ ĐÃ SỬA: Dùng UUID thật bạn vừa gửi
+      userId: '3d806f0d-4b36-4d70-9d00-aff58cd2a1d1', 
       
-      // Nếu có danh sách role được phép, kiểm tra role
-      if (allowedRoles.length > 0 && !allowedRoles.includes(payload.role)) {
-        return res.status(403).json({ error: 'Forbidden: Không có quyền truy cập' });
-      }
+      username: 'admin_test',
+      role: 'admin' // Giả lập quyền to nhất để test mọi API
+    };
 
-      // Gán thông tin user vào request để các middleware/controller khác sử dụng
-      req.user = payload;
-      next();
-
-    } catch (error) {
-      return res.status(401).json({ error: 'Invalid token: Token không hợp lệ' });
-    }
+    next();
   };
 }
 
 module.exports = authorize;
-

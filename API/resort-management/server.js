@@ -7,7 +7,6 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const apiRouter = express.Router();
 const adminRouter = express.Router();
 
-
 const pool = require('./db');
 const resortsRouter = require('./routes/resorts');
 const roomsRouter = require('./routes/rooms');
@@ -17,25 +16,23 @@ const discountsRouter = require('./routes/discounts');
 const revenueRouter = require('./routes/revenue');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
-const paymentsRouter = require('./routes/payments');
 const notificationsRoute = require('./routes/notifications.js');
 const contactsRouter = require('./routes/contacts');
-const fakePaymentsRouter = require('./routes/fakepayments');
+
 // Admin routes
 adminRouter.use('/resorts', resortsRouter);
 adminRouter.use('/room-types', roomsRouter);
 adminRouter.use('/rooms', roomsRouter);
 
-
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 // Mount
 app.use('/api', apiRouter);
 app.use('/api/admin', adminRouter);
 app.use('/notifications', notificationsRoute);
 app.use('/api/auth', authRouter);
-app.use('/api/payments', fakePaymentsRouter);
 
 // Swagger configuration
 const swaggerDefinition = {
@@ -129,10 +126,8 @@ app.use('/api/bookings', bookingsRouter);
 app.use('/api/discounts', discountsRouter);
 app.use('/api/revenue', revenueRouter);
 app.use('/api/users', usersRouter);
-app.use('/api/payments', paymentsRouter);
 app.use('/api/contacts', contactsRouter);
 app.use('/notifications', notificationsRoute);
-
 
 // Root route
 app.get('/', (req, res) => {
