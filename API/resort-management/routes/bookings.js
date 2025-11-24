@@ -7,9 +7,7 @@ let authorize;
 try {
   authorize = require('../middleware/authorize');
 } catch (error) {
-  // Nếu không có middleware authorize, tạo một mock function
   authorize = () => (req, res, next) => {
-    // Mock user để test không cần JWT
     req.user = { userId: 1, role: 'guest' };
     next();
   };
@@ -18,8 +16,8 @@ try {
 /**
  * @swagger
  * tags:
- *   name: Bookings
- *   description: API quản lý booking
+ *   - name: Bookings
+ *     description: API quản lý booking
  */
 
 /**
@@ -38,10 +36,18 @@ try {
  *             type: object
  *             required: [roomId, checkIn, checkOut, pricePerNight]
  *             properties:
- *               roomId: { type: string }
- *               checkIn: { type: string, format: date }
- *               checkOut: { type: string, format: date }
- *               pricePerNight: { type: number }
+ *               roomId:
+ *                 type: string
+ *               checkIn:
+ *                 type: string
+ *                 format: date
+ *                 example: "25/12/2025"
+ *               checkOut:
+ *                 type: string
+ *                 format: date
+ *                 example: "28/12/2025"
+ *               pricePerNight:
+ *                 type: number
  *     responses:
  *       201:
  *         description: Đặt phòng thành công
@@ -138,10 +144,16 @@ router.get('/list', authorize(['admin', 'staff']), bookingsController.getAllBook
 
 /**
  * @swagger
- * /api/bookings/:id:
+ * /api/bookings/{id}:
  *   get:
  *     summary: Lấy chi tiết booking
  *     tags: [Bookings]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Chi tiết booking
@@ -150,12 +162,18 @@ router.get('/:id', bookingsController.getBookingById);
 
 /**
  * @swagger
- * /api/bookings/:id/cancel:
+ * /api/bookings/{id}/cancel:
  *   put:
  *     summary: Hủy đặt phòng
  *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Hủy thành công
@@ -164,12 +182,27 @@ router.put('/:id/cancel', authorize(['guest', 'staff', 'admin']), bookingsContro
 
 /**
  * @swagger
- * /api/bookings/:id/status:
+ * /api/bookings/{id}/status:
  *   put:
  *     summary: Cập nhật trạng thái booking
  *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Cập nhật thành công
@@ -177,13 +210,3 @@ router.put('/:id/cancel', authorize(['guest', 'staff', 'admin']), bookingsContro
 router.put('/:id/status', authorize(['admin', 'staff']), bookingsController.updateBookingStatus);
 
 module.exports = router;
-
-//Thêm thông báo
-router.post("/book", async (req, res) => {
-  try {
-    const booking = await createBooking(req.body);
-    return res.status(200).json({ message: "Đặt phòng thành công!", data: booking });
-  } catch (e) {
-    return res.status(500).json({ message: "Đặt phòng thất bại" });
-  }
-});
